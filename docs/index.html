@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="USTX와 믹스 음원으로 합창 비주얼라이저 영상을 만듭니다. 선택한 파일은 브라우저 안에서 처리됩니다." />
+    <title>KaiseiVisualizer</title>
+    <script type="module" crossorigin src="./assets/index-CcDh0DUM.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-pT8g2r_n.css">
+  </head>
+  <body>
+    <main class="page">
+      <header class="page-head">
+        <div><h1>KaiseiVisualizer/<input id="projectTitle" aria-label="영상 제목" value="프로젝트" /></h1><p>USTX와 믹스 음원으로 합창 영상을 만듭니다.</p></div>
+        <span id="projectFile">파일을 선택해 주세요</span>
+      </header>
+      <section class="files" aria-label="입력 파일">
+        <label class="file-card"><span>1. USTX 악보</span><input id="ustxFile" type="file" accept=".ustx,application/yaml,text/yaml" /><small id="ustxName">USTX 파일을 선택하세요</small></label>
+        <label class="file-card"><span>2. 믹스 음원</span><input id="audioFile" type="file" accept="audio/wav,audio/mpeg,audio/mp3,.wav,.mp3" /><small id="audioName">WAV 또는 MP3 믹스를 선택하세요</small></label>
+        <p class="privacy-note">선택한 파일은 이 브라우저에서만 처리됩니다. 개인 파일은 서버로 전송되거나 공개 빌드에 포함되지 않습니다.</p>
+      </section>
+      <canvas id="stage" width="1920" height="1080" aria-label="합창 무대와 음높이 노트"></canvas>
+      <section class="console" aria-label="재생 및 무대 설정">
+        <div class="controls playback">
+          <button id="play" class="primary" disabled>재생</button><span id="clock">0:00 / 0:00</span>
+          <input id="seek" aria-label="재생 위치" type="range" min="0" max="1" value="0" step="0.01" disabled />
+          <button id="export" class="export" disabled>MP4로 저장</button>
+          <button id="cancel" disabled>취소</button>
+        </div>
+        <progress id="progress" max="100" value="0"></progress>
+        <p id="status" role="status" aria-live="polite">USTX와 믹스 음원을 선택해 주세요.</p>
+        <div class="controls toggles">
+          <label><input id="pitchGrid" type="checkbox" checked>음계 표시</label>
+          <label><input id="pitchNotes" type="checkbox" checked>노트 궤적</label>
+          <label><input id="pitchLine" type="checkbox" checked>피치선</label>
+          <label><input id="currentTone" type="checkbox" checked>재생 중인 음</label>
+          <label><input id="showNames" type="checkbox" checked>이름 표시</label>
+          <label>화면 배치 <select id="layout"><option value="pan">패닝 위치 그대로</option><option value="spread">고르게 펼치기</option></select></label>
+          <label>음원 맞춤 <input id="offset" type="number" value="0" step="0.05" aria-label="음원 맞춤 초" /> 초</label>
+          <label>배경색 <input id="backgroundColor" type="color" value="#ffffff" /></label>
+          <label>영상 크기 <select id="resolution"><option value="1080">1920 × 1080</option><option value="720">1280 × 720</option></select></label>
+        </div>
+        <div class="settings">
+          <label>전체 스탠딩 크기<input id="characterSize" type="range" min="0.6" max="2.5" value="2" step="0.05"><output id="characterSizeValue">2.00배</output></label>
+          <label>음역 화면 비율<input id="pitchStep" type="range" min="60" max="90" value="80" step="1"><output id="pitchStepValue">80%</output></label>
+          <label>가사 크기<input id="lyricScale" type="range" min="0.5" max="2" value="1" step="0.05"><output id="lyricScaleValue">1.00배</output></label>
+          <label>노트 이동 속도<input id="trajectorySpeed" type="number" min="1" step="1" value="34"><output id="trajectorySpeedValue">34px/초</output></label>
+          <label>현재음 잔상<input id="whiteFade" type="number" min="0.05" step="0.05" value="0.5"><output id="whiteFadeValue">0.50초</output></label>
+          <label>기둥 발광 시간<input id="flashDuration" type="number" min="0.05" step="0.05" value="0.45"><output id="flashDurationValue">0.45초</output></label>
+          <label>스탠딩 페이드 인<input id="standFadeIn" type="number" min="0" step="0.1" value="0.5"><output id="standFadeInValue">0.50초</output></label>
+          <label>스탠딩 페이드 아웃<input id="standFadeOut" type="number" min="0" step="0.1" value="0.5"><output id="standFadeOutValue">0.50초</output></label>
+          <label>MAIN 불투명도<input id="mainOpacity" type="range" min="0" max="100" value="100"><output id="mainOpacityValue">100%</output></label>
+          <label>비메인 불투명도<input id="nonMainOpacity" type="range" min="0" max="100" value="45"><output id="nonMainOpacityValue">45%</output></label>
+          <label>배경 인물 불투명도<input id="backgroundOpacity" type="range" min="0" max="100" value="18"><output id="backgroundOpacityValue">18%</output></label>
+        </div>
+      </section>
+      <details>
+        <summary>캐릭터별 이름·색·스탠딩 설정</summary>
+        <p>트랙별로 이름, 상징색, 크기, 바닥 여백을 조정하고 투명 PNG를 지정할 수 있습니다.</p>
+        <div id="cast" class="cast"></div>
+      </details>
+      <audio id="audio" preload="metadata"></audio>
+    </main>
+  </body>
+</html>
